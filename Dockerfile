@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # 创建截图存储目录
-RUN mkdir -p /data/screenshots
+RUN mkdir -p /root/service/external-link-monitor/data/screenshots
 
 # 暴露端口
 EXPOSE 8000

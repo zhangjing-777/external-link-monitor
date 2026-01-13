@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     PLAYWRIGHT_SERVICE_URL: str = "http://playwright-service:8000"
     
     # 截图存储配置
-    SCREENSHOT_DIR: str = "/data/screenshots"
+    SCREENSHOT_DIR: str = "/root/service/external-link-monitor/data/screenshots"
     
     # 日志配置
     LOG_LEVEL: str = "INFO"
