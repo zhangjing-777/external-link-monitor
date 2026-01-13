@@ -106,7 +106,7 @@ class Database:
         """
         
         async with self.pool.connection() as conn:
-            async with conn.cursor() as cur:
+            async with conn.cursor(row_factory=dict_row) as cur:
                 insert_sql = """
                 INSERT INTO external_link_snapshot 
                 (origin_url, click_type, click_value, page_url, page_hash, screenshot_path)
@@ -120,6 +120,7 @@ class Database:
                     origin_url, click_type, click_value, page_url, page_hash, screenshot_path
                     ),
                 )
+                return await cur.fetchone()
 
     async def get_daily_stats_last_60_days(self):
         """

@@ -89,12 +89,6 @@ async def health_check():
 
 @app.post(
     "/api/external-link-snapshot",
-    response_model=CreateSnapshotResponse,
-    responses={
-        200: {"model": CreateSnapshotResponse},
-        400: {"model": ErrorResponse},
-        500: {"model": ErrorResponse}
-    },
     tags=["快照管理"],
     summary="创建外链点击快照",
     description="执行网页点击操作并记录安全快照"
@@ -140,7 +134,7 @@ async def create_snapshot(request: CreateSnapshotRequest):
         
         # 3. 写入数据库
         logger.info("步骤 3/4: 写入数据库...")
-        snapshot_id = db.insert_snapshot(
+        res = await db.insert_snapshot(
             origin_url=request.origin_url,
             click_type=request.click_type,
             click_value=request.click_value,
@@ -149,18 +143,13 @@ async def create_snapshot(request: CreateSnapshotRequest):
             screenshot_path=screenshot_path
         )
         
-        logger.info(f"数据库记录已创建: snapshot_id={snapshot_id}")
-        
         # 4. 返回结果
         logger.info("步骤 4/4: 返回结果")
         logger.info("=" * 60)
-        logger.info(f"✓ 快照创建成功: snapshot_id={snapshot_id}")
+        logger.info(f"✓ 快照创建成功")
         logger.info("=" * 60)
         
-        return CreateSnapshotResponse(
-            snapshot_id=snapshot_id,
-            status="ok"
-        )
+        return res
         
     except Exception as e:
         logger.error("=" * 60)
