@@ -4,7 +4,7 @@
 """
 import logging
 from typing import Optional
-import asyncio
+from datetime import datetime
 from psycopg.rows import dict_row
 from psycopg_pool import AsyncConnectionPool
 
@@ -179,16 +179,23 @@ class Database:
                 await cur.execute(sql, (day, day))
                 return await cur.fetchall()
 
+
     async def get_events_by_month(self, year: int, month: int):
         """
         返回某年某月，
         所有 origin 的事件明细
         """
+        start_time = datetime(year, month, 1)
+        if month == 12:
+            end_time = datetime(year + 1, 1, 1)
+        else:
+            end_time = datetime(year, month + 1, 1)
+
         sql = """
         SELECT *
         FROM external_link_snapshot
-        WHERE created_at >= make_date(%s, %s, 1)
-        AND created_at < (make_date(%s, %s, 1) + INTERVAL '1 month')
+        WHERE created_at >= %s
+        AND created_at <  %s
         ORDER BY origin_url ASC, created_at ASC;
         """
 
@@ -196,9 +203,10 @@ class Database:
             async with conn.cursor(row_factory=dict_row) as cur:
                 await cur.execute(
                     sql,
-                    (year, month, year, month)
+                    (start_time, end_time)
                 )
                 return await cur.fetchall()
+
 
     async def get_events_by_range(
         self,
