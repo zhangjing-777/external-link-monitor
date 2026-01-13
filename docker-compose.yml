@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  external-link-monitor:
+    build:
+      context: ./external-link-monitor
+      dockerfile: Dockerfile
+    container_name: external-link-monitor
+    ports:
+      - "8020:8000"
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # 截图文件持久化存储
+      - screenshot-data:/data/screenshots
+    networks:
+      - external-link-network
+    restart: unless-stopped
+
